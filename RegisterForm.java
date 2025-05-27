@@ -2,107 +2,83 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class RegisterForm extends JFrame {
-    private JTextField nameField, emailField, usernameField;
+public class RegisterForm extends JFrame implements ActionListener {
+
+    private JTextField usernameField, emailField;
     private JPasswordField passwordField, confirmPasswordField;
-    private JButton registerButton, clearButton;
+    private JButton registerButton, resetButton, cancelButton;
 
     public RegisterForm() {
         setTitle("User Registration");
         setSize(400, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null); // center on screen
+        setLocationRelativeTo(null);
+        setLayout(new GridLayout(6, 2, 10, 10));
 
-        // Components
-        JLabel nameLabel = new JLabel("Full Name:");
-        JLabel emailLabel = new JLabel("Email:");
+        // Create UI components
         JLabel usernameLabel = new JLabel("Username:");
+        JLabel emailLabel = new JLabel("Email:");
         JLabel passwordLabel = new JLabel("Password:");
         JLabel confirmPasswordLabel = new JLabel("Confirm Password:");
 
-        nameField = new JTextField(15);
-        emailField = new JTextField(15);
-        usernameField = new JTextField(15);
-        passwordField = new JPasswordField(15);
-        confirmPasswordField = new JPasswordField(15);
+        usernameField = new JTextField();
+        emailField = new JTextField();
+        passwordField = new JPasswordField();
+        confirmPasswordField = new JPasswordField();
 
         registerButton = new JButton("Register");
-        clearButton = new JButton("Clear");
+        resetButton = new JButton("Reset");
+        cancelButton = new JButton("Cancel");
 
-        // Layout
-        JPanel panel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(6, 6, 6, 6);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        // Add listeners
+        registerButton.addActionListener(this);
+        resetButton.addActionListener(this);
+        cancelButton.addActionListener(this);
 
-        gbc.gridx = 0; gbc.gridy = 0;
-        panel.add(nameLabel, gbc);
-        gbc.gridx = 1;
-        panel.add(nameField, gbc);
+        // Add components to frame
+        add(usernameLabel); add(usernameField);
+        add(emailLabel); add(emailField);
+        add(passwordLabel); add(passwordField);
+        add(confirmPasswordLabel); add(confirmPasswordField);
+        add(registerButton); add(resetButton);
+        add(new JLabel()); add(cancelButton);
 
-        gbc.gridx = 0; gbc.gridy = 1;
-        panel.add(emailLabel, gbc);
-        gbc.gridx = 1;
-        panel.add(emailField, gbc);
-
-        gbc.gridx = 0; gbc.gridy = 2;
-        panel.add(usernameLabel, gbc);
-        gbc.gridx = 1;
-        panel.add(usernameField, gbc);
-
-        gbc.gridx = 0; gbc.gridy = 3;
-        panel.add(passwordLabel, gbc);
-        gbc.gridx = 1;
-        panel.add(passwordField, gbc);
-
-        gbc.gridx = 0; gbc.gridy = 4;
-        panel.add(confirmPasswordLabel, gbc);
-        gbc.gridx = 1;
-        panel.add(confirmPasswordField, gbc);
-
-        gbc.gridx = 0; gbc.gridy = 5;
-        panel.add(registerButton, gbc);
-        gbc.gridx = 1;
-        panel.add(clearButton, gbc);
-
-        add(panel);
-
-        // Actions
-        registerButton.addActionListener(e -> handleRegister());
-        clearButton.addActionListener(e -> clearFields());
+        setVisible(true);
     }
 
-    private void handleRegister() {
-        String name = nameField.getText();
-        String email = emailField.getText();
-        String username = usernameField.getText();
-        String password = String.valueOf(passwordField.getPassword());
-        String confirmPassword = String.valueOf(confirmPasswordField.getPassword());
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == registerButton) {
+            String username = usernameField.getText();
+            String email = emailField.getText();
+            String password = new String(passwordField.getPassword());
+            String confirmPassword = new String(confirmPasswordField.getPassword());
 
-        if (name.isEmpty() || email.isEmpty() || username.isEmpty() ||
-            password.isEmpty() || confirmPassword.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please fill all fields.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+            if (username.isEmpty() || email.isEmpty() || password.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please fill all fields.", "Warning", JOptionPane.WARNING_MESSAGE);
+            } else if (!password.equals(confirmPassword)) {
+                JOptionPane.showMessageDialog(this, "Passwords do not match.", "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                // In real app: save to DB
+                JOptionPane.showMessageDialog(this, "Registered Successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                dispose(); // close registration form
+                new LoginForm(); // proceed to login form
+            }
         }
 
-        if (!password.equals(confirmPassword)) {
-            JOptionPane.showMessageDialog(this, "Passwords do not match!", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+        if (e.getSource() == resetButton) {
+            usernameField.setText("");
+            emailField.setText("");
+            passwordField.setText("");
+            confirmPasswordField.setText("");
         }
 
-        // TODO: Save user data to file/database
-        JOptionPane.showMessageDialog(this, "Registration Successful!");
-    }
-
-    private void clearFields() {
-        nameField.setText("");
-        emailField.setText("");
-        usernameField.setText("");
-        passwordField.setText("");
-        confirmPasswordField.setText("");
+        if (e.getSource() == cancelButton) {
+            dispose();
+        }
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new RegisterForm().setVisible(true));
+        new RegisterForm();
     }
 }
