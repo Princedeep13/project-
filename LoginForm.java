@@ -2,67 +2,69 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class LoginForm extends JFrame {
-    private JTextField usernameField;
-    private JPasswordField passwordField;
-    private JButton loginButton, cancelButton;
+public class LoginForm extends JFrame implements ActionListener {
+
+    private JLabel userLabel, passLabel;
+    private JTextField userField;
+    private JPasswordField passField;
+    private JButton loginButton, resetButton;
 
     public LoginForm() {
+        // Frame settings
         setTitle("Login Form");
         setSize(350, 200);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null); // center on screen
+        setLocationRelativeTo(null);
+        setLayout(new GridLayout(4, 2, 10, 10));
 
-        // Create UI components
-        JLabel userLabel = new JLabel("Username:");
-        JLabel passLabel = new JLabel("Password:");
-        usernameField = new JTextField(15);
-        passwordField = new JPasswordField(15);
-
+        // Components
+        userLabel = new JLabel("Username:");
+        passLabel = new JLabel("Password:");
+        userField = new JTextField();
+        passField = new JPasswordField();
         loginButton = new JButton("Login");
-        cancelButton = new JButton("Cancel");
+        resetButton = new JButton("Reset");
 
-        // Layout setup
-        JPanel panel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
+        // Add action listeners
+        loginButton.addActionListener(this);
+        resetButton.addActionListener(this);
 
-        gbc.gridx = 0; gbc.gridy = 0;
-        panel.add(userLabel, gbc);
-        gbc.gridx = 1;
-        panel.add(usernameField, gbc);
+        // Add to frame
+        add(userLabel);
+        add(userField);
+        add(passLabel);
+        add(passField);
+        add(loginButton);
+        add(resetButton);
 
-        gbc.gridx = 0; gbc.gridy = 1;
-        panel.add(passLabel, gbc);
-        gbc.gridx = 1;
-        panel.add(passwordField, gbc);
-
-        gbc.gridx = 0; gbc.gridy = 2;
-        panel.add(loginButton, gbc);
-        gbc.gridx = 1;
-        panel.add(cancelButton, gbc);
-
-        add(panel);
-
-        // Button Actions
-        loginButton.addActionListener(e -> handleLogin());
-        cancelButton.addActionListener(e -> System.exit(0));
+        // Show window
+        setVisible(true);
     }
 
-    private void handleLogin() {
-        String username = usernameField.getText();
-        String password = String.valueOf(passwordField.getPassword());
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        String username = userField.getText();
+        String password = new String(passField.getPassword());
 
-        // Dummy validation (replace with real logic)
-        if (username.equals("admin") && password.equals("admin123")) {
-            JOptionPane.showMessageDialog(this, "Login Successful!");
-            // proceed to next form or dashboard
-        } else {
-            JOptionPane.showMessageDialog(this, "Invalid username or password.", "Login Failed", JOptionPane.ERROR_MESSAGE);
+        if (e.getSource() == loginButton) {
+            // Dummy authentication (you can replace this with DB check)
+            if (username.equals("admin") && password.equals("1234")) {
+                JOptionPane.showMessageDialog(this, "Login successful!");
+                // Proceed to next screen, e.g., VotingForm
+                new VotingForm(); // optional: if you have that class
+                dispose(); // close login window
+            } else {
+                JOptionPane.showMessageDialog(this, "Invalid username or password.");
+            }
+        }
+
+        if (e.getSource() == resetButton) {
+            userField.setText("");
+            passField.setText("");
         }
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new LoginForm().setVisible(true));
+        new LoginForm();
     }
 }
