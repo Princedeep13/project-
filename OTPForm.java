@@ -2,62 +2,73 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class OTPForm extends JFrame {
+public class OTPForm extends JFrame implements ActionListener {
+
+    private JLabel otpLabel;
     private JTextField otpField;
-    private JButton verifyButton, resendButton;
+    private JButton verifyButton, resendButton, cancelButton;
+    
+    // Simulated OTP for demo purposes
+    private final String generatedOTP = "123456";
 
     public OTPForm() {
         setTitle("OTP Verification");
-        setSize(300, 150);
+        setSize(300, 200);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null); // Center on screen
+        setLayout(new GridLayout(4, 1, 10, 10));
 
-        // Create components
-        JLabel otpLabel = new JLabel("Enter OTP:");
-        otpField = new JTextField(10);
+        // Components
+        otpLabel = new JLabel("Enter OTP sent to your number:");
+        otpField = new JTextField();
         verifyButton = new JButton("Verify");
         resendButton = new JButton("Resend OTP");
+        cancelButton = new JButton("Cancel");
 
-        // Layout setup
-        JPanel panel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(8, 8, 8, 8);
+        // Button Panel
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(verifyButton);
+        buttonPanel.add(resendButton);
+        buttonPanel.add(cancelButton);
 
-        gbc.gridx = 0; gbc.gridy = 0;
-        panel.add(otpLabel, gbc);
-        gbc.gridx = 1;
-        panel.add(otpField, gbc);
+        // Add components
+        add(otpLabel);
+        add(otpField);
+        add(buttonPanel);
 
-        gbc.gridx = 0; gbc.gridy = 1;
-        panel.add(verifyButton, gbc);
-        gbc.gridx = 1;
-        panel.add(resendButton, gbc);
+        // Event listeners
+        verifyButton.addActionListener(this);
+        resendButton.addActionListener(this);
+        cancelButton.addActionListener(this);
 
-        add(panel);
-
-        // Action listeners
-        verifyButton.addActionListener(e -> handleVerify());
-        resendButton.addActionListener(e -> handleResend());
+        setVisible(true);
     }
 
-    private void handleVerify() {
+    @Override
+    public void actionPerformed(ActionEvent e) {
         String enteredOTP = otpField.getText();
 
-        // Dummy check (replace with actual OTP logic)
-        if (enteredOTP.equals("123456")) {
-            JOptionPane.showMessageDialog(this, "OTP Verified!");
-            // Proceed to next step (e.g., open VotingForm)
-        } else {
-            JOptionPane.showMessageDialog(this, "Invalid OTP!", "Error", JOptionPane.ERROR_MESSAGE);
+        if (e.getSource() == verifyButton) {
+            if (enteredOTP.equals(generatedOTP)) {
+                JOptionPane.showMessageDialog(this, "OTP Verified Successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                dispose(); // Close OTP window
+                new VotingForm(); // Proceed to voting form
+            } else {
+                JOptionPane.showMessageDialog(this, "Invalid OTP. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+
+        if (e.getSource() == resendButton) {
+            // In a real app, resend OTP here
+            JOptionPane.showMessageDialog(this, "OTP resent successfully (Demo: 123456)", "Info", JOptionPane.INFORMATION_MESSAGE);
+        }
+
+        if (e.getSource() == cancelButton) {
+            dispose(); // Close the form
         }
     }
 
-    private void handleResend() {
-        // Dummy action — replace with your resend logic
-        JOptionPane.showMessageDialog(this, "OTP has been resent.");
-    }
-
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new OTPForm().setVisible(true));
+        new OTPForm();
     }
 }
